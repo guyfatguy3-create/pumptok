@@ -119,25 +119,38 @@
             transition: width 0.3s ease;
         }
 
-        /* Flying Pills Animation */
-        .flying-pill {
+        /* Stars Animation for Loading */
+        .stars-container {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             pointer-events: none;
-            animation: fly-across 4s linear infinite;
-            opacity: 0.7;
         }
 
-        @keyframes fly-across {
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--pill-green);
+            border-radius: 50%;
+            animation: fall-star linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes fall-star {
             0% {
-                transform: translateX(-100px) translateY(0) rotate(0deg);
+                transform: translateY(-10px) scale(0);
                 opacity: 0;
             }
-            10% { opacity: 0.7; }
-            90% { opacity: 0.7; }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
             100% {
-                transform: translateX(calc(100vw + 100px)) translateY(-200px) rotate(720deg);
+                transform: translateY(100vh) scale(1);
                 opacity: 0;
             }
         }
@@ -268,21 +281,6 @@
             position: relative;
         }
 
-        .creator-badge::before {
-            content: '🔥';
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.5rem;
-            animation: bounce-emoji 1s ease-in-out infinite;
-        }
-
-        @keyframes bounce-emoji {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-5px); }
-        }
-
         @keyframes glow-pulse {
             0%, 100% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.4), 0 0 40px rgba(74, 222, 128, 0.2); }
             50% { box-shadow: 0 0 40px rgba(74, 222, 128, 0.7), 0 0 80px rgba(0, 242, 234, 0.4); }
@@ -331,20 +329,65 @@
             margin-bottom: 10px;
         }
 
-        .pumpify-title .emoji {
-            animation: shake 0.5s ease-in-out infinite;
-            display: inline-block;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
-        }
-
         .pumpify-subtitle {
             font-size: 1.1rem;
             color: rgba(255,255,255,0.7);
             margin-bottom: 20px;
+        }
+
+        /* Pumpify Station with Inspo Images */
+        .pumpify-station-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .inspo-image {
+            width: 200px;
+            height: auto;
+            border-radius: 20px;
+            border: 2px solid rgba(74, 222, 128, 0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        .inspo-image:hover {
+            transform: scale(1.05);
+            border-color: var(--pill-green);
+        }
+
+        .inspo-left {
+            position: relative;
+        }
+
+        .inspo-right {
+            position: relative;
+        }
+
+        .inspo-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+        }
+
+        @media (max-width: 900px) {
+            .pumpify-station-wrapper {
+                flex-direction: column;
+            }
+            .inspo-image {
+                width: 150px;
+            }
+            .inspo-left, .inspo-right {
+                display: none;
+            }
         }
 
         /* Upload Station */
@@ -356,7 +399,7 @@
             position: relative;
             transition: all 0.3s ease;
             cursor: pointer;
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
         }
 
@@ -590,9 +633,10 @@
         }
 
         .mission-highlight li::before {
-            content: '💊';
+            content: '→';
             position: absolute;
             left: 0;
+            color: var(--pill-green);
         }
 
         /* How It Works */
@@ -709,36 +753,12 @@
             color: var(--pill-green);
             text-decoration: none;
         }
-
-        /* Floating Elements */
-        .floating-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .floating-pill {
-            position: absolute;
-            opacity: 0.1;
-            animation: float-random 20s ease-in-out infinite;
-        }
-
-        @keyframes float-random {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-30px) rotate(10deg); }
-            50% { transform: translateY(0) rotate(-5deg); }
-            75% { transform: translateY(30px) rotate(5deg); }
-        }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen">
+        <div class="stars-container" id="stars-container"></div>
         <img src="logo.png" alt="PumpTok Logo" class="loading-logo">
         <div class="loading-text">
             Loading $PumpTok<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
@@ -746,15 +766,10 @@
         <div class="loading-bar-container">
             <div class="loading-bar" id="loading-bar"></div>
         </div>
-        <!-- Flying Pills Container -->
-        <div id="flying-pills-container"></div>
     </div>
 
     <!-- Main Content -->
     <div id="main-content">
-        <!-- Floating Background Elements -->
-        <div class="floating-elements" id="floating-bg"></div>
-
         <!-- Hero Section with Pumpify Station -->
         <section class="hero">
             <img src="logo.png" alt="PumpTok Logo" class="main-logo">
@@ -782,40 +797,53 @@
                 </a>
             </div>
 
-            <!-- PUMPIFY STATION RIGHT HERE -->
+            <!-- PUMPIFY STATION -->
             <div class="pumpify-header">
-                <h2 class="pumpify-title">
-                    <span class="emoji">💊</span> PUMPIFY STATION <span class="emoji">💊</span>
-                </h2>
-                <p class="pumpify-subtitle">Upload any image. Get it Pumpified. Spam it everywhere. Go viral.</p>
+                <h2 class="pumpify-title">PUMPIFY STATION</h2>
+                <p class="pumpify-subtitle">Upload any image. Get it Pumpified. Spam it everywhere.</p>
             </div>
             
-            <div class="upload-station" id="upload-station">
-                <div class="upload-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
+            <div class="pumpify-station-wrapper">
+                <!-- Left Inspo Image -->
+                <div class="inspo-left">
+                    <img src="inspo1.png" alt="Pumpified Example" class="inspo-image">
+                    <span class="inspo-label">inspo / created</span>
                 </div>
-                <p class="upload-text">Drop your image here or click to upload</p>
-                <p class="upload-hint">PNG, JPG, GIF supported • Max 10MB</p>
-                <input type="file" id="file-input" accept="image/*">
+                
+                <!-- Upload Station -->
+                <div class="upload-station" id="upload-station">
+                    <div class="upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <p class="upload-text">Drop your image here or click to upload</p>
+                    <p class="upload-hint">PNG, JPG, GIF supported</p>
+                    <input type="file" id="file-input" accept="image/*">
+                </div>
+                
+                <!-- Right Inspo Image -->
+                <div class="inspo-right">
+                    <img src="inspo2.png" alt="Pumpified Example" class="inspo-image">
+                    <span class="inspo-label">inspo / created</span>
+                </div>
             </div>
             
             <div class="preview-area" id="preview-area">
                 <div class="preview-grid">
                     <div class="preview-box original">
-                        <h4>📸 Original</h4>
+                        <h4>Original</h4>
                         <img id="original-preview" alt="Original image">
                     </div>
                     <div class="preview-box result">
-                        <h4>💊 Pumpified!</h4>
+                        <h4>Pumpified</h4>
                         <img id="result-preview" alt="Pumpified image">
                     </div>
                 </div>
                 <div class="button-group">
-                    <button class="btn btn-primary" id="download-btn">Download & Share! 💊</button>
+                    <button class="btn btn-primary" id="download-btn">Download & Share</button>
                     <button class="btn btn-secondary" id="new-btn">Pumpify Another</button>
                 </div>
             </div>
@@ -824,18 +852,18 @@
         <!-- Mission Section -->
         <section class="mission">
             <div class="mission-container">
-                <h2>🚀 The Mission: Bring Pump.fun to TikTok</h2>
+                <h2>The Mission: Bring Pump.fun to TikTok</h2>
                 <p class="mission-text">
                     Everyone wants a TikTok runner. Alon's been teasing it, CT is buzzing about it everywhere. 
                     But why wait for the perfect moment? <strong style="color: var(--pill-green);">Let's CREATE it.</strong>
                 </p>
                 
                 <div class="mission-highlight">
-                    <h3>💊 The PumpTok Strategy</h3>
+                    <h3>The PumpTok Strategy</h3>
                     <ul>
                         <li><strong>Pumpify your memes</strong> - Upload any reaction/TikTok image and transform it</li>
                         <li><strong>Spam viral posts</strong> - Drop your pumpified images in comment sections</li>
-                        <li><strong>Start trends</strong> - It's SHOCKINGLY easy to go viral on TikTok when you're witty & funny</li>
+                        <li><strong>Start trends</strong> - It's shockingly easy to go viral on TikTok when you're witty and funny</li>
                         <li><strong>Onboard famous TikTokers</strong> - Copy WhiteWhale's approach, grow past CT</li>
                         <li><strong>Get valued like the legends</strong> - We're building the next 9-10 figure meme</li>
                     </ul>
@@ -843,14 +871,14 @@
                 
                 <p class="mission-text" style="font-size: 1.4rem; color: var(--pill-green); font-weight: 700;">
                     We don't have to wait for a perfect TikTok meme to appear.<br>
-                    We're MAKING it happen. NOW. 💊🚀
+                    We're making it happen. Now.
                 </p>
             </div>
         </section>
 
         <!-- How It Works -->
         <section class="how-it-works">
-            <h2>⚡ How To Go Viral</h2>
+            <h2>How To Go Viral</h2>
             <div class="steps">
                 <div class="step">
                     <div class="step-number">1</div>
@@ -865,21 +893,21 @@
                 <div class="step">
                     <div class="step-number">3</div>
                     <h3>Trend</h3>
-                    <p>TikTok trends spread FAST. Get one TikToker to notice, and watch the dominoes fall.</p>
+                    <p>TikTok trends spread fast. Get one TikToker to notice, and watch the dominoes fall.</p>
                 </div>
                 <div class="step">
                     <div class="step-number">4</div>
                     <h3>Moon</h3>
-                    <p>Onboard famous TikTokers. Break out of CT. Get valued like WhiteWhale. LFG! 🚀</p>
+                    <p>Onboard famous TikTokers. Break out of CT. Get valued like WhiteWhale.</p>
                 </div>
             </div>
         </section>
 
         <!-- Footer CTA -->
         <section class="footer-cta">
-            <h2>🔥 Join The Movement</h2>
+            <h2>Join The Movement</h2>
             <p>Every pumpified meme is a soldier in our viral army. Let's make $PUMPTOK the talk of TikTok.</p>
-            <a href="#" class="btn btn-primary" onclick="document.getElementById('upload-station').scrollIntoView({behavior: 'smooth'}); return false;">Start Pumpifying Now! 💊</a>
+            <a href="#" class="btn btn-primary" onclick="document.getElementById('upload-station').scrollIntoView({behavior: 'smooth'}); return false;">Start Pumpifying</a>
             
             <div class="hashtags">
                 <span class="hashtag">#PumpTok</span>
@@ -891,7 +919,7 @@
 
         <!-- Footer -->
         <footer>
-            <p>$PUMPTOK - Bringing Pump.fun to TikTok 💊 | <a href="https://x.com/i/communities/2011700888490877200" target="_blank">Join our X Community</a> | Made by <a href="https://x.com/i/communities/2011700888490877200" target="_blank">@drinx66</a></p>
+            <p>$PUMPTOK - Bringing Pump.fun to TikTok | <a href="https://x.com/i/communities/2011700888490877200" target="_blank">Join our X Community</a> | Made by <a href="https://x.com/i/communities/2011700888490877200" target="_blank">@drinx66</a></p>
         </footer>
     </div>
 
@@ -907,11 +935,11 @@
             const loadingScreen = document.getElementById('loading-screen');
             const mainContent = document.getElementById('main-content');
             const loadingBar = document.getElementById('loading-bar');
-            const pillsContainer = document.getElementById('flying-pills-container');
+            const starsContainer = document.getElementById('stars-container');
             
-            // Create flying pills
-            for (let i = 0; i < 8; i++) {
-                createFlyingPill(pillsContainer, i);
+            // Create falling stars
+            for (let i = 0; i < 50; i++) {
+                createStar(starsContainer, i);
             }
             
             // Animate loading bar
@@ -925,35 +953,26 @@
                     setTimeout(() => {
                         loadingScreen.classList.add('hidden');
                         mainContent.classList.add('visible');
-                        createFloatingBackground();
                     }, 500);
                 }
                 loadingBar.style.width = progress + '%';
             }, 200);
         });
 
-        function createFlyingPill(container, index) {
-            const pill = document.createElement('img');
-            pill.src = 'pill.png';
-            pill.className = 'flying-pill';
-            pill.style.top = (Math.random() * 80 + 10) + '%';
-            pill.style.animationDelay = (index * 0.5) + 's';
-            pill.style.animationDuration = (3 + Math.random() * 2) + 's';
-            container.appendChild(pill);
-        }
-
-        function createFloatingBackground() {
-            const container = document.getElementById('floating-bg');
-            for (let i = 0; i < 10; i++) {
-                const pill = document.createElement('img');
-                pill.src = 'pill.png';
-                pill.className = 'floating-pill';
-                pill.style.width = (30 + Math.random() * 40) + 'px';
-                pill.style.left = (Math.random() * 100) + '%';
-                pill.style.top = (Math.random() * 100) + '%';
-                pill.style.animationDelay = (Math.random() * 5) + 's';
-                container.appendChild(pill);
-            }
+        function createStar(container, index) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDelay = (Math.random() * 3) + 's';
+            star.style.animationDuration = (2 + Math.random() * 3) + 's';
+            
+            // Random colors
+            const colors = ['#4ade80', '#00f2ea', '#ff0050', '#ffffff'];
+            star.style.background = colors[Math.floor(Math.random() * colors.length)];
+            star.style.width = (2 + Math.random() * 3) + 'px';
+            star.style.height = star.style.width;
+            
+            container.appendChild(star);
         }
 
         // ==================== FILE UPLOAD ====================
